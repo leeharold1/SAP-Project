@@ -25,6 +25,11 @@ app.get("/register", function(req, res) {
   res.render("register");
 });
 
+app.get("/login", function(req, res) {
+  res.render("login");
+});
+
+
 app.use(session({
   store: new SQLiteStore({ db }),
   secret: 'your_secret_key',
@@ -53,20 +58,24 @@ app.post('/login', async (req, res) => {
 
   db.get('SELECT * FROM users WHERE email = ?', [email], async (err, row) => {
     if (err) {
+      console.log(err);
       return res.status(500).send('Error logging in.');
     }
+//----------------------------------------------------------------------
 
-    if (!row || !(await bcrypt.compare(password, row.password))) {
+    if (!row || row.password !== password) {
+      console.log('Login failed:', email, password);
       return res.status(401).send('Incorrect email or password.');
     }
 
+//-----------------------------------------------------------------------
     req.session.userId = row.id;
 
     return res.send('Logged in successfully.');
   });
 });
 
-app.post('/signout', (req, res) => {
+app.post('/logout', (req, res) => {
   req.session.destroy((err) => {
     if (err) {
       return res.status(500).send('Error signing out.');
