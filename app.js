@@ -49,7 +49,7 @@ app.post('/register', async (req, res) => {
     if (err) {
       return res.status(500).send('Error creating account.');
     }
-    return res.send('Account created successfully.');
+    res.redirect('/login');
   });
 });
 
@@ -61,28 +61,33 @@ app.post('/login', async (req, res) => {
       console.log(err);
       return res.status(500).send('Error logging in.');
     }
-//----------------------------------------------------------------------
 
     if (!row || row.password !== password) {
       console.log('Login failed:', email, password);
       return res.status(401).send('Incorrect email or password.');
     }
 
-//-----------------------------------------------------------------------
-    req.session.userId = row.id;
+    req.session.userId = row.ID;
 
-    return res.send('Logged in successfully.');
+    console.log('Login successful:', email, password);
+    console.log(req.session);
+    res.redirect('/');
   });
 });
 
 app.post('/logout', (req, res) => {
+  console.log('Session before destroy: ', req.session);
   req.session.destroy((err) => {
     if (err) {
+      console.log('Logout failed. Error signing out.');
       return res.status(500).send('Error signing out.');
     }
-    return res.send('Signed out successfully.');
+    console.log('Session after destroy: ', req.session);
+    res.redirect('/login');
   });
 });
+
+
 
 app.listen(port, () => {
   console.log(`App listening at http://localhost:3000`);
