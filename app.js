@@ -42,6 +42,9 @@ app.use(session({
   }
 }));
 
+
+//-----------------------------------------------------------------------------------------
+
 app.post('/register', async (req, res) => {
   const { email, password } = req.body;
 
@@ -52,6 +55,9 @@ app.post('/register', async (req, res) => {
     res.redirect('/login');
   });
 });
+
+//------------------------------------------------------------------------------------------
+
 
 app.post('/login', async (req, res) => {
   const { email, password } = req.body;
@@ -64,7 +70,7 @@ app.post('/login', async (req, res) => {
 
     if (!row || row.password !== password) {
       console.log('Login failed:', email, password);
-      return res.status(401).send('Incorrect email or password.');
+      return res.status(401).send('Incorrect password.');
     }
 
     req.session.userId = row.ID;
@@ -74,6 +80,9 @@ app.post('/login', async (req, res) => {
     res.redirect('/');
   });
 });
+
+//------------------------------------------------------------------------------------------
+
 
 app.post('/logout', (req, res) => {
   console.log('Session before destroy: ', req.session);
@@ -87,7 +96,7 @@ app.post('/logout', (req, res) => {
   });
 });
 
-
+//------------------------------------------------------------------------------------------
 
 app.listen(port, () => {
   console.log(`App listening at http://localhost:3000`);
