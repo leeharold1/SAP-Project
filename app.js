@@ -120,8 +120,25 @@ app.post('/admin/:ID', async (req, res) => {
     res.redirect('/admin');
   });
 });
+
 //------------------------------------------------------------------------------------------
 
+const products = [
+  { product: 'Smartphone', price: 300.00, deliveryTime: 5 },
+  { product: 'Laptop', price: 800.00, deliveryTime: 7 },
+  { product: 'Tablet', price: 250.00, deliveryTime: 3 },
+  { product: 'Earbuds', price: 100.00, deliveryTime: 2 },
+  { product: 'Smartwatch', price: 150.00, deliveryTime: 6 },
+  { product: 'Gaming console', price: 400.00, deliveryTime: 10 },
+  { product: 'Wireless speaker', price: 80.00, deliveryTime: 4 },
+  { product: 'Fitness tracker', price: 50.00, deliveryTime: 1 }
+];
+
+app.get('/products', (req, res) => {
+  res.render('products', { products: products });
+});
+
+//------------------------------------------------------------------------------------------
 app.listen(port, () => {
   console.log(`App listening at http://localhost:3000`);
 });

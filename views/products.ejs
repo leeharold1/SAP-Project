@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>SAP - Products</title>
+  </head>
+  <body>
+    <h1>Products</h1>
+    <style>
+    table {
+      border-collapse: collapse;
+      width: 100%;
+    }
+
+    th, td {
+      text-align: left;
+      padding: 8px;
+    }
+
+    th {
+      background-color: #808588;
+      color: black;
+      font-style: italic;
+    }
+
+    tr:nth-child(even){background-color: #f2f2f2}
+  </style>
+    <table>
+      <tr>
+        <th>Price</th>
+        <th>Product</th>
+        <th>Avg. Delivery Time</th>
+      </tr>
+      <% products.forEach(product => { %>
+        <tr>
+          <td>€<%= product.price %></td>
+          <td><%= product.product %></td>
+          <td><%= product.deliveryTime %> days</td>
+        </tr>
+      <% }) %>
+    </table>
+  </body>
+</html>
