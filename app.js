@@ -109,6 +109,17 @@ app.get('/admin', (req, res) => {
   });
 });
 
+app.post('/admin/:ID', async (req, res) => {
+  const ID = req.params.ID;
+
+  db.run('DELETE FROM users WHERE ID = ?', ID, (err) => {
+    if (err) {
+      console.log(err);
+      return res.status(500).send('Error deleting user.');
+    }
+    res.redirect('/admin');
+  });
+});
 //------------------------------------------------------------------------------------------
 
 app.listen(port, () => {

@@ -30,6 +30,7 @@
         <th>ID</th>
         <th>Email</th>
         <th>Password</th>
+        <th>Action(s)</th>
       </tr>
     </thead>
     <tbody>
@@ -38,6 +39,11 @@
           <td><%= user.ID %></td>
           <td><%= user.email %></td>
           <td><%= user.password %></td>
+          <td>
+            <form action="/admin/<%= user.ID %>" method="POST">
+              <button type="submit">Delete</button>
+            </form>
+          </td>
         </tr>
       <% }); %>
     </tbody>
