@@ -14,6 +14,7 @@ const db = new sqlite3.Database('database.sqlite3');
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
+
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
@@ -93,6 +94,18 @@ app.post('/logout', (req, res) => {
     }
     console.log('Session after destroy: ', req.session);
     res.redirect('/login');
+  });
+});
+
+//------------------------------------------------------------------------------------------
+
+app.get('/admin', (req, res) => {
+  db.all('SELECT * FROM users', (err, rows) => {
+    if (err) {
+      console.log(err);
+      return res.status(500).send('Error retrieving users.');
+    }
+    res.render('admin', { users: rows });
   });
 });
 
