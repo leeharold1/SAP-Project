@@ -29,7 +29,7 @@ app.use(session({
   resave: false,
   saveUninitialized: true,
   cookie: {
-    secure: true,
+    secure: false,
     httpOnly: true,
     sameSite: 'strict'
   }
@@ -137,6 +137,7 @@ app.post('/login', async (req, res) => {
 
     console.log('Login successful:', email, password);
     console.log(req.session);
+    console.log(req.session.userId);
     res.redirect('/');
   });
 });
@@ -159,6 +160,7 @@ app.post('/logout', (req, res) => {
 //------------------------------------------------------------------------------------------
 
 app.get('/admin', (req, res) => {
+  console.log(req.session.userId);
   db.all('SELECT * FROM users', (err, rows) => {
     if (err) {
       console.log(err);
