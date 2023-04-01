@@ -65,19 +65,15 @@ app.post('/login', async (req, res) => {
 
   db.get('SELECT * FROM users WHERE email = ?', [email], async (err, row) => {
     if (err) {
-      console.log(err);
       return res.status(500).send('Error logging in.');
     }
 
     if (!row || row.password !== password) {
-      console.log('Login failed:', email, password);
       return res.status(401).send('Incorrect password.');
     }
 
     req.session.userId = row.ID;
 
-    console.log('Login successful:', email, password);
-    console.log(req.session);
     res.redirect('/');
   });
 });
@@ -86,13 +82,10 @@ app.post('/login', async (req, res) => {
 
 
 app.post('/logout', (req, res) => {
-  console.log('Session before destroy: ', req.session);
   req.session.destroy((err) => {
     if (err) {
-      console.log('Logout failed. Error signing out.');
       return res.status(500).send('Error signing out.');
     }
-    console.log('Session after destroy: ', req.session);
     res.redirect('/login');
   });
 });
@@ -102,7 +95,6 @@ app.post('/logout', (req, res) => {
 app.get('/admin', (req, res) => {
   db.all('SELECT * FROM users', (err, rows) => {
     if (err) {
-      console.log(err);
       return res.status(500).send('Error retrieving users.');
     }
     res.render('admin', { users: rows });
@@ -114,7 +106,6 @@ app.post('/admin/:ID', async (req, res) => {
 
   db.run('DELETE FROM users WHERE ID = ?', ID, (err) => {
     if (err) {
-      console.log(err);
       return res.status(500).send('Error deleting user.');
     }
     res.redirect('/admin');
