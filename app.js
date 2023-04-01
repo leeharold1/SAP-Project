@@ -22,14 +22,6 @@ app.get("/", function(req, res) {
   res.render("index");
 });
 
-app.get("/register", function(req, res) {
-  res.render("register");
-});
-
-app.get("/login", function(req, res) {
-  res.render("login");
-});
-
 
 app.use(session({
   store: new SQLiteStore({ db }),
@@ -46,10 +38,17 @@ app.use(session({
 
 //-----------------------------------------------------------------------------------------
 
+app.get("/register", function(req, res) {
+  res.render("register");
+});
+
 app.post('/register', async (req, res) => {
   const { email, password } = req.body;
 
-  db.run('INSERT INTO users (email, password) VALUES (?, ?)', [email, password], (err) => {
+  const saltRounds = 10;
+  const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+  db.run('INSERT INTO users (email, password) VALUES (?, ?)', [email, hashedPassword], (err) => {
     if (err) {
       return res.status(500).send('Error creating account.');
     }
@@ -59,6 +58,9 @@ app.post('/register', async (req, res) => {
 
 //------------------------------------------------------------------------------------------
 
+app.get("/login", function(req, res) {
+  res.render("login");
+});
 
 app.post('/login', async (req, res) => {
   const { email, password } = req.body;
