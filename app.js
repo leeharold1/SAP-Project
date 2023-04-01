@@ -160,7 +160,10 @@ app.post('/logout', (req, res) => {
 //------------------------------------------------------------------------------------------
 
 app.get('/admin', (req, res) => {
-  console.log(req.session.userId);
+  const userId = req.session.userId;
+  if (userId !== 0) { // if userId does not equal 0, user is not authorised
+    return res.status(401).send('You are not authorised to view this page.');
+  }
   db.all('SELECT * FROM users', (err, rows) => {
     if (err) {
       console.log(err);
@@ -169,6 +172,7 @@ app.get('/admin', (req, res) => {
     res.render('admin', { users: rows });
   });
 });
+
 
 app.post('/admin/:ID', async (req, res) => {
   const ID = req.params.ID;
@@ -215,8 +219,15 @@ const products = [
 ];
 
 app.get('/products', (req, res) => {
-  res.render('products', { products: products });
+  const userId = req.session.userId;
+  console.log(userId)
+  if (userId !== undefined && userId !== 0) {       // if the userId is undefined (not logged in), or 0 (admin)
+    res.render('products', { products: products }); // the page cannot be viewed
+  } else {
+    res.status(401).send('Please log in to view this page.');
+  }
 });
+
 
 //------------------------------------------------------------------------------------------
 app.listen(port, () => {
