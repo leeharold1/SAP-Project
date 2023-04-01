@@ -45,10 +45,11 @@ app.get("/register", function(req, res) {
 app.post('/register', async (req, res) => {
   const { email, password } = req.body;
 
-  const saltRounds = 10;
-  const hashedPassword = await bcrypt.hash(password, saltRounds);
+//----Passwords hashed before sending to users table
+  const saltRounds = 10; // ounds of salt used
+  const hashedPassword = await bcrypt.hash(password, saltRounds); // hashedPassword = the password after being hashed
 
-  db.run('INSERT INTO users (email, password) VALUES (?, ?)', [email, hashedPassword], (err) => {
+  db.run('INSERT INTO users (email, password) VALUES (?, ?)', [email, hashedPassword], (err) => { // send email and hashedPassword to the users table
     if (err) {
       return res.status(500).send('Error creating account.');
     }
