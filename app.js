@@ -45,17 +45,48 @@ app.get("/register", function(req, res) {
 app.post('/register', async (req, res) => {
   const { email, password } = req.body;
 
-//----Passwords hashed before sending to users table
-  const saltRounds = 10; // ounds of salt used
-  const hashedPassword = await bcrypt.hash(password, saltRounds); // hashedPassword = the password after being hashed
+  try {
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-  db.run('INSERT INTO users (email, password) VALUES (?, ?)', [email, hashedPassword], (err) => { // send email and hashedPassword to the users table
-    if (err) {
-      return res.status(500).send('Error creating account.');
-    }
-    res.redirect('/login');
-  });
+    db.run('INSERT INTO users (email, password) VALUES (?, ?)', [email, hashedPassword], (err) => {
+      if (err) {
+        // Log the failed registration attempt to the LogTable table
+        const activity = 'User registration failed';
+        const timestamp = new Date().toISOString();
+        db.run('INSERT INTO LogTable (activity_Logged, logged_At) VALUES (?, ?)', [activity, timestamp], (err) => {
+          if (err) {
+            console.log('Error logging activity to LogTable:', err);
+          }
+        });
+        return res.status(500).send('Error creating account.');
+      }
+
+      // Log the successful registration to the LogTable table
+      const activity = 'User registered';
+      const timestamp = new Date().toISOString();
+      db.run('INSERT INTO LogTable (activity_Logged, logged_At) VALUES (?, ?)', [activity, timestamp], (err) => {
+        if (err) {
+          console.log('Error logging activity to LogTable:', err);
+        }
+      });
+
+      res.redirect('/login');
+    });
+  } catch (err) {
+    // Log the failed registration attempt to the LogTable table
+    const activity = 'User registration failed';
+    const timestamp = new Date().toISOString();
+    db.run('INSERT INTO LogTable (activity_Logged, logged_At) VALUES (?, ?)', [activity, timestamp], (err) => {
+      if (err) {
+        console.log('Error logging activity to LogTable:', err);
+      }
+    });
+    return res.status(500).send('Error creating account.');
+  }
 });
+
+
 
 //------------------------------------------------------------------------------------------
 
@@ -68,14 +99,39 @@ app.post('/login', async (req, res) => {
 
   db.get('SELECT * FROM users WHERE email = ?', [email], async (err, row) => {
     if (err) {
+      // Log the failed login attempt to the LogTable table
+      const activity = 'Login failed';
+      const timestamp = new Date().toISOString();
+      db.run('INSERT INTO LogTable (activity_Logged, logged_At) VALUES (?, ?)', [activity, timestamp], (err) => {
+        if (err) {
+          console.log('Error logging activity to LogTable:', err);
+        }
+      });
       console.log(err);
       return res.status(500).send('Error logging in.');
     }
 
     if (!row || row.password !== password) {
+      // Log the failed login attempt to the LogTable table
+      const activity = 'Login failed';
+      const timestamp = new Date().toISOString();
+      db.run('INSERT INTO LogTable (activity_Logged, logged_At) VALUES (?, ?)', [activity, timestamp], (err) => {
+        if (err) {
+          console.log('Error logging activity to LogTable:', err);
+        }
+      });
       console.log('Login failed:', email, password);
       return res.status(401).send('Incorrect password.');
     }
+
+    // Log the successful login to the LogTable table
+    const activity = 'Login successful';
+    const timestamp = new Date().toISOString();
+    db.run('INSERT INTO LogTable (activity_Logged, logged_At) VALUES (?, ?)', [activity, timestamp], (err) => {
+      if (err) {
+        console.log('Error logging activity to LogTable:', err);
+      }
+    });
 
     req.session.userId = row.ID;
 
@@ -117,12 +173,31 @@ app.post('/admin/:ID', async (req, res) => {
 
   db.run('DELETE FROM users WHERE ID = ?', ID, (err) => {
     if (err) {
-      console.log(err);
+      // Log the failed user deletion attempt to the LogTable table
+      const activity = 'User deletion failed';
+      const timestamp = new Date().toISOString();
+      db.run('INSERT INTO LogTable (activity_Logged, logged_At) VALUES (?, ?)', [activity, timestamp], (err) => {
+        if (err) {
+          console.log('Error logging activity to LogTable:', err);
+        }
+      });
       return res.status(500).send('Error deleting user.');
     }
+
+    // Log the successful user deletion to the LogTable table
+    const activity = 'User deleted';
+    const timestamp = new Date().toISOString();
+    db.run('INSERT INTO LogTable (activity_Logged, logged_At) VALUES (?, ?)', [activity, timestamp], (err) => {
+      if (err) {
+        console.log('Error logging activity to LogTable:', err);
+      }
+    });
+
     res.redirect('/admin');
   });
 });
+
+
 
 //------------------------------------------------------------------------------------------
 
