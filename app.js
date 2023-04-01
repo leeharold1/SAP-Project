@@ -42,8 +42,25 @@ app.get("/register", function(req, res) {
   res.render("register");
 });
 
+const passwordRegex = /^(?=.*\d) (?=.*[a-z]) (?=.*[A-Z]) (?=.*[!@#$%^&*()_+]) (?=.*[a-zA-Z]).{8,}$/; 
+// ^^ Minimum 8 characters, at least one uppercase letter, one lowercase letter, one number and one special character ^^
+
+
+
 app.post('/register', async (req, res) => {
   const { email, password } = req.body;
+
+  if (!passwordRegex.test(password)) {
+    // Log the failed registration attempt to the LogTable table
+    const activity = 'User registration failed due to weak password';
+    const timestamp = new Date().toISOString();
+    db.run('INSERT INTO LogTable (activity_Logged, logged_At) VALUES (?, ?)', [activity, timestamp], (err) => {
+      if (err) {
+        console.log('Error logging activity to LogTable:', err);
+      }
+    });
+    return res.status(400).send('Password does not meet minimum requirements.');
+  }
 
   try {
     const saltRounds = 10;
@@ -85,6 +102,7 @@ app.post('/register', async (req, res) => {
     return res.status(500).send('Error creating account.');
   }
 });
+
 
 
 
