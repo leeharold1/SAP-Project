@@ -165,15 +165,49 @@ app.post('/login', async (req, res) => {
 
 app.post('/logout', (req, res) => {
   console.log('Session before destroy: ', req.session);
+
+  if (typeof req.session.userId === 'undefined') {
+    // User is not logged in, return error message and log the activity
+    const activity = 'Logout failed: user not logged in';
+    const timestamp = new Date().toISOString();
+    db.run('INSERT INTO LogTable (activity_Logged, logged_At) VALUES (?, ?)', [activity, timestamp], (err) => {
+      if (err) {
+        console.log('Error logging activity to LogTable:', err);
+      }
+    });
+    return res.status(401).send('You are not logged in.');
+  }
+
   req.session.destroy((err) => {
     if (err) {
+      // unsuccessful logout and log the activity
+      const activity = 'Logout unsuccessful';
+      const timestamp = new Date().toISOString();
+      db.run('INSERT INTO LogTable (activity_Logged, logged_At) VALUES (?, ?)', [activity, timestamp], (err) => {
+        if (err) {
+          console.log('Error logging activity to LogTable:', err);
+        }
+      });
       console.log('Logout failed. Error signing out.');
       return res.status(500).send('Error signing out.');
     }
+
+    // successful logout and log the activity
+    const activity = 'Logout successful';
+    const timestamp = new Date().toISOString();
+    db.run('INSERT INTO LogTable (activity_Logged, logged_At) VALUES (?, ?)', [activity, timestamp], (err) => {
+      if (err) {
+        console.log('Error logging activity to LogTable:', err);
+      }
+    });
+
     console.log('Session after destroy: ', req.session);
     res.redirect('/login');
   });
 });
+
+
+
 
 //------------------------------------------------------------------------------------------
 
