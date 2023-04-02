@@ -138,7 +138,7 @@ app.post('/login', async (req, res) => {
           console.log('Error logging activity to LogTable:', err);
         }
       });
-      console.log('Login failed:', email, password);
+      console.log('Login failed:', email);
       return res.status(401).send('Incorrect login credentials.');
     }
 
@@ -153,7 +153,7 @@ app.post('/login', async (req, res) => {
 
     req.session.userId = row.ID;
 
-    console.log('Login successful:', email, password);
+    console.log('Login successful:', email);
     console.log(req.session);
     console.log(req.session.userId);
     res.redirect('/');
