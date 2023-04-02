@@ -2,5 +2,7 @@
 
 Insecure Branch:
 
-Node.js must be installed on.
+Node.js must be installed on computer.
+Clone repository.
+cd into the repo. 
 Run 'npm start' to start application.
