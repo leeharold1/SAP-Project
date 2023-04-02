@@ -63,8 +63,8 @@ app.post('/register', async (req, res) => {
   }
 
   try {
-    const saltRounds = 10;
-    const hashedPassword = await bcrypt.hash(password, saltRounds);
+    const saltRounds = 10; //rounds of salt used for hash
+    const hashedPassword = await bcrypt.hash(password, saltRounds); //hashedPassword = Password after 10 rounds of salt
 
     db.run('INSERT INTO users (email, password) VALUES (?, ?)', [email, hashedPassword], (err) => {
       if (err) {
