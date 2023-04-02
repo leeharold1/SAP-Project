@@ -139,7 +139,7 @@ app.post('/login', async (req, res) => {
         }
       });
       console.log('Login failed:', email, password);
-      return res.status(401).send('Incorrect password.');
+      return res.status(401).send('Incorrect login credentials.');
     }
 
     // Log the successful login to the LogTable table
